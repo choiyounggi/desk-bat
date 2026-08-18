@@ -2,17 +2,34 @@ import Foundation
 
 public struct GameConfig: Equatable, Codable {
     public var swingKeyCode: UInt32
+    public var swingModifiers: UInt32
     public var startKeyCode: UInt32
+    public var startModifiers: UInt32
     public var bossKeyCode: UInt32
+    public var bossModifiers: UInt32
 
-    public init(swingKeyCode: UInt32, startKeyCode: UInt32, bossKeyCode: UInt32) {
+    public init(
+        swingKeyCode: UInt32, swingModifiers: UInt32,
+        startKeyCode: UInt32, startModifiers: UInt32,
+        bossKeyCode: UInt32, bossModifiers: UInt32
+    ) {
         self.swingKeyCode = swingKeyCode
+        self.swingModifiers = swingModifiers
         self.startKeyCode = startKeyCode
+        self.startModifiers = startModifiers
         self.bossKeyCode = bossKeyCode
+        self.bossModifiers = bossModifiers
     }
 
-    // macOS virtual key codes: F6=97, F7=98, F8=100.
-    public static let `default` = GameConfig(swingKeyCode: 97, startKeyCode: 98, bossKeyCode: 100)
+    // macOS virtual key codes: S=1, G=5, H=4.
+    // Modifier mask 6144 = Carbon controlKey(0x1000) + optionKey(0x800) → ⌃⌥.
+    // F-row keys were dropped as defaults: many external keyboards handle Fn in
+    // firmware and never deliver F6–F8 to macOS at all.
+    public static let `default` = GameConfig(
+        swingKeyCode: 1, swingModifiers: 6144,
+        startKeyCode: 5, startModifiers: 6144,
+        bossKeyCode: 4, bossModifiers: 6144
+    )
 
     public static func load(directory: URL) -> GameConfig {
         let fileURL = directory.appendingPathComponent("config.json")
@@ -21,6 +38,8 @@ public struct GameConfig: Equatable, Codable {
             return config
         }
 
+        // Also reached for pre-modifier config files: they fail to decode and
+        // are migrated to the new defaults.
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         if let data = try? JSONEncoder().encode(GameConfig.default) {
             try? data.write(to: fileURL, options: .atomic)

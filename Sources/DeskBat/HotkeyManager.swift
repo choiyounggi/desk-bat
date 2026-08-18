@@ -64,7 +64,7 @@ final class HotkeyManager {
     }
 
     @discardableResult
-    func register(id: UInt32, keyCode: UInt32) -> Bool {
+    func register(id: UInt32, keyCode: UInt32, modifiers: UInt32 = 0) -> Bool {
         if let existingRef = hotKeyRefs[id] {
             UnregisterEventHotKey(existingRef)
             hotKeyRefs[id] = nil
@@ -74,7 +74,7 @@ final class HotkeyManager {
         let hotKeyID = EventHotKeyID(signature: Self.signature, id: id)
         let status = RegisterEventHotKey(
             keyCode,
-            0,
+            modifiers,
             hotKeyID,
             GetEventDispatcherTarget(),
             0,

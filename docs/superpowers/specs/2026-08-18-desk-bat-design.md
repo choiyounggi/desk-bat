@@ -52,9 +52,10 @@ desk-bat/
 ### 글로벌 단축키 (HotkeyManager)
 
 - Carbon `RegisterEventHotKey` — 접근성 권한 불필요.
-- 기본 키: **F6 스윙, F7 게임 시작, F8 보스키**.
-- `~/Library/Application Support/DeskBat/config.json`에서 키코드 변경 가능.
-  파일 없으면 기본값으로 생성. 손상된 파일이면 기본값 폴백.
+- 기본 키: **⌃⌥S 스윙, ⌃⌥G 게임 시작, ⌃⌥H 보스키** (modifier 마스크 6144 = Control+Option).
+  F키 기본값은 폐기 — 외장 키보드 다수가 Fn을 펌웨어 처리해 F6~F8이 macOS에 전달되지 않음.
+- `~/Library/Application Support/DeskBat/config.json`에서 키코드·modifier 변경 가능.
+  파일 없으면 기본값으로 생성. 손상되었거나 modifier 필드가 없는 구버전 파일이면 기본값으로 재작성.
 
 ### 게임 규칙 (DeskBatCore)
 

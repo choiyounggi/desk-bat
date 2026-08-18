@@ -42,13 +42,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hotkeyManager.handler = { [weak self] id in
             self?.handleHotkey(id: id)
         }
-        if !hotkeyManager.register(id: 1, keyCode: config.swingKeyCode) {
+        if !hotkeyManager.register(id: 1, keyCode: config.swingKeyCode, modifiers: config.swingModifiers) {
             FileHandle.standardError.write(Data("DeskBat: failed to register swing hotkey\n".utf8))
         }
-        if !hotkeyManager.register(id: 2, keyCode: config.startKeyCode) {
+        if !hotkeyManager.register(id: 2, keyCode: config.startKeyCode, modifiers: config.startModifiers) {
             FileHandle.standardError.write(Data("DeskBat: failed to register start hotkey\n".utf8))
         }
-        if !hotkeyManager.register(id: 3, keyCode: config.bossKeyCode) {
+        if !hotkeyManager.register(id: 3, keyCode: config.bossKeyCode, modifiers: config.bossModifiers) {
             FileHandle.standardError.write(Data("DeskBat: failed to register boss hotkey\n".utf8))
         }
 

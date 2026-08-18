@@ -11,8 +11,8 @@ think). It sits quietly in the bottom-left corner of your screen — no Dock
 icon, and clicking it never steals focus from the app you're "working" in.
 Those 3 minutes waiting for code review, those 5 minutes while the build runs —
 your hands never leave the keyboard, so to any onlooker you are simply Very
-Busy. Swing with F6, and when someone walks by, destroy the evidence with a
-single F8 (hides the window and pauses the game; F8 again to resume).
+Busy. Swing with ⌃⌥S, and when someone walks by, destroy the evidence with a
+single ⌃⌥H (hides the window and pauses the game; ⌃⌥H again to resume).
 
 ![The homerun moment — impact burst and the ball taking off](docs/images/screenshot-homerun.png)
 
@@ -47,26 +47,30 @@ To launch at login, add `DeskBat.app` to System Settings > General > Login Items
 
 | Key | Action |
 |-----|--------|
-| F6 | Swing |
-| F7 | Start a game (10 pitches) |
-| F8 | Boss key — toggle window visibility (hiding also pauses the game) |
+| ⌃⌥S (Control+Option+S) | Swing |
+| ⌃⌥G (Control+Option+G) | Start a game (10 pitches) |
+| ⌃⌥H (Control+Option+H) | Boss key — toggle window visibility (hiding also pauses the game) |
 
-On laptop keyboards F6/F7/F8 often double as brightness/volume keys, so you may
-need to hold `Fn` (e.g. `Fn+F6`).
+Modifier combos were chosen over F-keys on purpose: many external keyboards
+handle `Fn` in firmware and never deliver F6–F8 to macOS at all, and on Mac
+laptops the F-row doubles as brightness/volume keys.
 
 Key mappings live in `~/Library/Application Support/DeskBat/config.json`,
 auto-created with defaults on first launch:
 
 ```json
 {
-  "swingKeyCode": 97,
-  "startKeyCode": 98,
-  "bossKeyCode": 100
+  "swingKeyCode": 1, "swingModifiers": 6144,
+  "startKeyCode": 5, "startModifiers": 6144,
+  "bossKeyCode": 4, "bossModifiers": 6144
 }
 ```
 
-Values are macOS virtual key codes (defaults: F6=97, F7=98, F8=100). Restart
-the app after changing them.
+Key codes are macOS virtual key codes (S=1, G=5, H=4); modifiers are a Carbon
+modifier mask (6144 = Control 4096 + Option 2048; Shift 512, Command 256 —
+use 0 for a bare key). A config file from an older version without the
+modifier fields is automatically reset to these defaults. Restart the app
+after changing them.
 
 ## Game Rules
 

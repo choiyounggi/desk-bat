@@ -37,6 +37,20 @@ public enum PitchEngine {
         TimeInterval.random(in: 1.5...3.5, using: &rng)
     }
 
+    /// Swing offset for judgment, in ms. Early swings are measured by the
+    /// ball's remaining distance to the plate (converted to time at the
+    /// pitch's average speed), not by raw elapsed time — so a decelerating
+    /// changeup that visually sits on the plate judges as on-time. Late
+    /// swings (elapsed ≥ duration) fall back to the plain time delta.
+    /// For linear pitches both formulas coincide.
+    public static func contactDeltaMs(pitch: Pitch, elapsed: TimeInterval) -> Double {
+        if elapsed >= pitch.duration {
+            return (elapsed - pitch.duration) * 1000
+        }
+        let x = position(pitch: pitch, t: elapsed).x
+        return -(1 - x) * pitch.duration * 1000
+    }
+
     public static func position(pitch: Pitch, t: TimeInterval) -> PitchPoint {
         let clampedT = min(max(t, 0), pitch.duration)
         let progress = pitch.duration > 0 ? clampedT / pitch.duration : 1

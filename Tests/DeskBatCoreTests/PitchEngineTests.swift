@@ -99,6 +99,46 @@ final class PitchEngineTests: XCTestCase {
         }
     }
 
+    // MARK: - Normal: contactDeltaMs judges by ball distance from the plate, not raw time
+
+    func testContactDeltaMs_linearPitch_matchesTimeDelta() {
+        // For straight pitches x is linear in t, so the spatial delta must
+        // equal the plain time delta on both the early and late side.
+        let pitch = Pitch(type: .fastball)
+        XCTAssertEqual(PitchEngine.contactDeltaMs(pitch: pitch, elapsed: pitch.duration - 0.100), -100, accuracy: 0.001)
+        XCTAssertEqual(PitchEngine.contactDeltaMs(pitch: pitch, elapsed: pitch.duration + 0.100), 100, accuracy: 0.001)
+    }
+
+    func testContactDeltaMs_changeup_usesVisualBallPosition() {
+        // Changeup at 80% of flight time is already at x=0.96 — visually on
+        // the plate. Spatial delta: -(1-0.96)*700 = -28ms (homerun window),
+        // where the raw time delta would be -140ms (foul).
+        let pitch = Pitch(type: .changeup)
+        let delta = PitchEngine.contactDeltaMs(pitch: pitch, elapsed: pitch.duration * 0.8)
+        XCTAssertEqual(delta, -28, accuracy: 0.001)
+    }
+
+    // MARK: - Boundary: contactDeltaMs at exact arrival and at release
+
+    func testContactDeltaMs_atArrival_isZero() {
+        for type in PitchType.allCases {
+            let pitch = Pitch(type: type)
+            XCTAssertEqual(PitchEngine.contactDeltaMs(pitch: pitch, elapsed: pitch.duration), 0, accuracy: 0.001, "\(type)")
+        }
+    }
+
+    func testContactDeltaMs_atRelease_isFullDurationEarly() {
+        let pitch = Pitch(type: .slowball)
+        XCTAssertEqual(PitchEngine.contactDeltaMs(pitch: pitch, elapsed: 0), -800, accuracy: 0.001)
+    }
+
+    // MARK: - Error/invalid input: negative elapsed clamps like position()
+
+    func testContactDeltaMs_negativeElapsed_clampsToRelease() {
+        let pitch = Pitch(type: .fastball)
+        XCTAssertEqual(PitchEngine.contactDeltaMs(pitch: pitch, elapsed: -3), -450, accuracy: 0.001)
+    }
+
     // MARK: - Boundary: interval always within [1.5, 3.5]
 
     func testInterval_alwaysWithinBounds() {

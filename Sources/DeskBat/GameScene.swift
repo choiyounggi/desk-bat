@@ -38,7 +38,6 @@ final class GameScene: SKScene {
     /// (Core marks its session state pitchInFlight earlier, while the pitch is
     /// still in its pre-windup wait, so this flag is the true flight signal).
     private var pitchStartTime: CFTimeInterval?
-    private var pitchInFlightDuration: TimeInterval?
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -65,7 +64,6 @@ final class GameScene: SKScene {
         [pitcher, batter, ball].forEach { $0.removeAllActions() }
         session.start()
         pitchStartTime = nil
-        pitchInFlightDuration = nil
         ball.isHidden = true
         guideLabel.isHidden = true
         pitcher.setPose(.idle)
@@ -81,18 +79,17 @@ final class GameScene: SKScene {
         case .betweenPitches:
             playWhiffAnimation()
         case .pitchInFlight:
-            guard let start = pitchStartTime, let duration = pitchInFlightDuration else {
+            guard let start = pitchStartTime, let pitch = session.currentPitch else {
                 playWhiffAnimation()
                 return
             }
-            let deltaMs = Self.deltaMs(now: CACurrentMediaTime(), start: start, duration: duration)
+            let deltaMs = PitchEngine.contactDeltaMs(pitch: pitch, elapsed: CACurrentMediaTime() - start)
             guard let result = session.resolveSwing(deltaMs: deltaMs) else {
                 playWhiffAnimation()
                 return
             }
             cancelPitchTimers()
             pitchStartTime = nil
-            pitchInFlightDuration = nil
             batter.run(batter.poseSequence([.swing, .followThrough, .idle], stepDuration: 0.12))
             presentResult(result)
         }
@@ -171,7 +168,6 @@ final class GameScene: SKScene {
 
     private func releasePitch(_ pitch: Pitch) {
         pitchStartTime = CACurrentMediaTime()
-        pitchInFlightDuration = pitch.duration
 
         ball.isHidden = false
         ball.position = Self.scenePosition(for: PitchEngine.position(pitch: pitch, t: 0))
@@ -191,7 +187,6 @@ final class GameScene: SKScene {
         let result = session.resolveNoSwing()
         ball.removeAction(forKey: "ballFlight")
         pitchStartTime = nil
-        pitchInFlightDuration = nil
         presentResult(result)
     }
 
@@ -265,13 +260,4 @@ final class GameScene: SKScene {
         return CGPoint(x: x, y: y)
     }
 
-    // MARK: - Swing timing (plan D3)
-
-    /// Δ passed to `GameSession.resolveSwing(deltaMs:)`: swing time minus
-    /// plate-crossing time (release + pitch duration), in ms. `now`/`start`
-    /// must come from the same monotonic clock (CACurrentMediaTime), never
-    /// wall-clock Date(), so a paused/resumed clock can't skew the gap.
-    static func deltaMs(now: CFTimeInterval, start: CFTimeInterval, duration: TimeInterval) -> Double {
-        (now - (start + duration)) * 1000
-    }
 }

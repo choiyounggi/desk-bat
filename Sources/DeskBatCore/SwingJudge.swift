@@ -32,15 +32,15 @@ public enum SwingJudge {
         let absDelta = abs(deltaMs)
 
         if absDelta <= 40 {
-            let base = 120 - (absDelta / 40) * 30
+            let base = 150 - (absDelta / 40) * 50
             let jitter = Double.random(in: -5...5, using: &rng)
             let distance = Int((base + jitter).rounded())
-            return .homerun(distance: min(max(distance, 90), 120))
+            return .homerun(distance: min(max(distance, 100), 150))
         } else if absDelta <= 90 {
-            let base = 80 - (absDelta / 90) * 50
+            let base = 95 - (absDelta / 90) * 55
             let jitter = Double.random(in: -8...8, using: &rng)
             let distance = Int((base + jitter).rounded())
-            return .hit(distance: min(max(distance, 30), 80))
+            return .hit(distance: min(max(distance, 40), 95))
         } else if absDelta <= 140 {
             return .foul
         } else {

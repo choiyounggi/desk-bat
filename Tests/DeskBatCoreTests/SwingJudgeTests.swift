@@ -11,8 +11,8 @@ final class SwingJudgeTests: XCTestCase {
         guard case .homerun(let distance) = result else {
             return XCTFail("expected homerun, got \(result)")
         }
-        XCTAssertGreaterThanOrEqual(distance, 90)
-        XCTAssertLessThanOrEqual(distance, 120)
+        XCTAssertGreaterThanOrEqual(distance, 100)
+        XCTAssertLessThanOrEqual(distance, 150)
         XCTAssertEqual(result.distance, distance)
         XCTAssertEqual(result.label, "홈런")
     }
@@ -23,8 +23,8 @@ final class SwingJudgeTests: XCTestCase {
         guard case .hit(let distance) = result else {
             return XCTFail("expected hit, got \(result)")
         }
-        XCTAssertGreaterThanOrEqual(distance, 30)
-        XCTAssertLessThanOrEqual(distance, 80)
+        XCTAssertGreaterThanOrEqual(distance, 40)
+        XCTAssertLessThanOrEqual(distance, 95)
         XCTAssertEqual(result.distance, distance)
         XCTAssertEqual(result.label, "안타")
     }
@@ -57,9 +57,9 @@ final class SwingJudgeTests: XCTestCase {
         guard case .homerun(let distance) = result else {
             return XCTFail("expected homerun, got \(result)")
         }
-        // base=120, jitter +/-5, clamp 90...120 -> distance in 115...120.
-        XCTAssertGreaterThanOrEqual(distance, 115)
-        XCTAssertLessThanOrEqual(distance, 120)
+        // base=150, jitter +/-5, clamp 100...150 -> distance in 145...150.
+        XCTAssertGreaterThanOrEqual(distance, 145)
+        XCTAssertLessThanOrEqual(distance, 150)
     }
 
     func testJudge_exactly40ms_isHomerun() {

@@ -7,19 +7,20 @@ import DeskBatCore
 /// according to `result`; callers don't track effect node lifetimes.
 ///
 /// Effects scale with contact quality: the distance is normalized inside its
-/// judgment band (hit 30...80m, homerun 90...120m — display-only mirror of the
-/// core's ranges) so a better-timed swing produces a visibly bigger show.
+/// judgment band (hit 40...95m, homerun 100...150m — display-only mirror of
+/// the core's ranges) so a better-timed swing produces a visibly bigger show.
 ///
-/// Batted balls fly on a full parabola that always LANDS inside the scene —
-/// the landing point maps to the distance (30m short, 120m at the far right
-/// edge), so the whole trajectory stays visible instead of clipping off
-/// screen. The flight runs on a clone; the real ball is hidden immediately so
-/// the pitch loop can reuse it while the batted ball is still in the air.
+/// Hits fly on a full parabola that LANDS inside the scene — the landing
+/// point maps to the distance — so the whole trajectory stays visible.
+/// Homeruns leave the park: the ball soars past the top-right edge and never
+/// comes back, with fireworks going off mid-sky as it exits. Both flights run
+/// on a clone; the real ball is hidden immediately so the pitch loop can
+/// reuse it while the batted ball is still in the air.
 enum EffectsNode {
     static func present(result: SwingResult, ball: SKShapeNode, in scene: SKScene, labelPosition: CGPoint) {
         switch result {
         case .homerun(let distance):
-            let q = quality(of: distance, lo: 90, hi: 120)
+            let q = quality(of: distance, lo: 100, hi: 150)
             impact(at: ball.position, in: scene, intensity: 0.8 + q * 0.7)
             if q >= 0.8 {
                 label(text: "PERFECT!", color: .systemRed, at: labelPosition.offsetBy(dy: -24),
@@ -27,17 +28,17 @@ enum EffectsNode {
             }
             label(text: "HOMERUN! \(distance)m", color: .systemOrange, at: labelPosition,
                   in: scene, fontSize: 20 + q * 8, holdDuration: 0.7 + q * 0.4)
-            launch(from: ball, in: scene, distance: distance, trailRate: 140 + q * 260) { landing in
-                burst(at: landing, in: scene, color: .systemOrange, intensity: 1 + q)
-                delayedBurst(at: landing.offsetBy(dy: 14), in: scene, color: .systemYellow,
+            launchOutOfPark(from: ball, in: scene, quality: q, trailRate: 140 + q * 260) { sky in
+                burst(at: sky, in: scene, color: .systemOrange, intensity: 1 + q)
+                delayedBurst(at: sky.offsetBy(dy: 14), in: scene, color: .systemYellow,
                              intensity: 0.8 + q, delay: 0.15)
                 if q >= 0.6 {
-                    delayedBurst(at: landing.offsetBy(dy: 28), in: scene, color: .systemRed,
+                    delayedBurst(at: sky.offsetBy(dy: 28), in: scene, color: .systemRed,
                                  intensity: 1.4, delay: 0.3)
                 }
             }
         case .hit(let distance):
-            let q = quality(of: distance, lo: 30, hi: 80)
+            let q = quality(of: distance, lo: 40, hi: 95)
             impact(at: ball.position, in: scene, intensity: 0.4 + q * 0.5)
             label(text: "안타 \(distance)m", color: .systemGreen, at: labelPosition,
                   in: scene, fontSize: 17 + q * 5, holdDuration: 0.6 + q * 0.3)
@@ -207,15 +208,9 @@ enum EffectsNode {
 
     // MARK: - Ball motion per judgment
 
-    /// Batted-ball flight: hides the real ball (the pitch loop reuses it) and
-    /// flies a clone on a parabola that lands INSIDE the scene — landing x maps
-    /// distance 30m→~40% width, 120m→right edge — then bounces twice, calls
-    /// `onLanding` at touchdown, and fades. The whole arc stays on screen.
-    private static func launch(from ball: SKShapeNode, in scene: SKScene, distance: Int,
-                               trailRate: CGFloat, onLanding: @escaping (CGPoint) -> Void) {
-        let start = ball.position
-        ball.isHidden = true
-
+    /// Creates the batted-ball clone (the pitch loop reuses the real ball)
+    /// with an optional spark trail, already added to the scene.
+    private static func flightBall(at start: CGPoint, trailRate: CGFloat, in scene: SKScene) -> SKShapeNode {
         let flight = SKShapeNode(circleOfRadius: 4)
         flight.fillColor = .white
         flight.strokeColor = .black
@@ -237,9 +232,50 @@ enum EffectsNode {
             trail.targetNode = scene
             flight.addChild(trail)
         }
+        return flight
+    }
+
+    /// Homerun flight: the ball soars on a high arc past the top-right edge
+    /// of the scene and never lands — it left the park. `fireworks` fires
+    /// mid-flight at the ball's sky position while it is still visible.
+    private static func launchOutOfPark(from ball: SKShapeNode, in scene: SKScene, quality q: CGFloat,
+                                        trailRate: CGFloat, fireworks: @escaping (CGPoint) -> Void) {
+        let start = ball.position
+        ball.isHidden = true
+        let flight = flightBall(at: start, trailRate: trailRate, in: scene)
+
+        let end = CGPoint(x: scene.size.width * 1.35, y: 150)
+        let apex = 80 + q * 50
+        let duration = 0.9 + 0.3 * Double(q)
+
+        flight.run(.sequence([
+            .customAction(withDuration: duration) { node, elapsed in
+                let p = CGFloat(elapsed) / CGFloat(duration)
+                node.position = CGPoint(
+                    x: start.x + (end.x - start.x) * p,
+                    y: start.y + (end.y - start.y) * p + apex * sin(.pi * p)
+                )
+            },
+            .removeFromParent()
+        ]))
+        scene.run(.sequence([
+            .wait(forDuration: duration * 0.55),
+            .run { if flight.parent != nil { fireworks(flight.position) } }
+        ]))
+    }
+
+    /// Hit flight: hides the real ball and flies a clone on a parabola that
+    /// lands INSIDE the scene — landing x maps distance 40m→~half width,
+    /// 95m→~3/4 width — then bounces twice, calls `onLanding` at touchdown,
+    /// and fades. The whole arc stays on screen.
+    private static func launch(from ball: SKShapeNode, in scene: SKScene, distance: Int,
+                               trailRate: CGFloat, onLanding: @escaping (CGPoint) -> Void) {
+        let start = ball.position
+        ball.isHidden = true
+        let flight = flightBall(at: start, trailRate: trailRate, in: scene)
 
         // Distance → geometry: farther = longer, higher, slightly slower arc.
-        let f = CGFloat(min(max(Double(distance) / 120.0, 0), 1))
+        let f = CGFloat(min(max(Double(distance) / 150.0, 0), 1))
         let landingX = scene.size.width * (0.35 + 0.62 * f)
         let groundY: CGFloat = 112
         let apex = 45 + f * 60

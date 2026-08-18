@@ -112,11 +112,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         panel.title = "기록"
         panel.isReleasedWhenClosed = false
+        // Keep the scoreboard readable while the user works in another app —
+        // NSPanel hides on deactivate by default, and a normal-level window
+        // would be invisible over fullscreen Spaces where the overlay lives.
+        panel.hidesOnDeactivate = false
+        panel.level = .floating
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
 
         let textView = NSTextView(frame: CGRect(origin: .zero, size: panelSize))
         textView.string = text
         textView.isEditable = false
         textView.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+        textView.textContainerInset = NSSize(width: 10, height: 10)
         textView.autoresizingMask = [.width, .height]
 
         let scrollView = NSScrollView(frame: CGRect(origin: .zero, size: panelSize))
@@ -178,26 +185,5 @@ private final class OverlayContentView: NSView {
     override func mouseExited(with event: NSEvent) {
         recordButton.isHidden = true
         closeButton.isHidden = true
-    }
-}
-
-/// Formats game history for the record panel (plan D8) — pure, no UI/IO.
-enum HistoryFormatter {
-    static func format(history: [GameRecord], best: GameRecord?) -> String {
-        guard let best else {
-            return "기록 없음"
-        }
-
-        var lines = ["BEST \(best.score)m"]
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(identifier: "UTC")
-        formatter.dateFormat = "M/d HH:mm"
-
-        let recent = history.sorted { $0.date > $1.date }.prefix(10)
-        for record in recent {
-            lines.append("\(formatter.string(from: record.date))  \(record.score)m")
-        }
-        return lines.joined(separator: "\n")
     }
 }

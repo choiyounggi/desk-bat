@@ -88,8 +88,8 @@ The result depends on how far the ball is from the contact point at the
 moment you swing (converted to ms at the pitch's average speed — so what you
 see is what gets judged, even on the decelerating changeup):
 
-- Within ±40ms: **Homerun** (90–120m) — the more precise, the bigger the fireworks
-- Within ±90ms: **Hit** (30–80m)
+- Within ±40ms: **Homerun** (100–150m) — the ball leaves the park; the more precise, the bigger the fireworks
+- Within ±90ms: **Hit** (40–95m)
 - Within ±140ms: **Foul** (0m)
 - Otherwise, or no swing: **Whiff** (0m)
 

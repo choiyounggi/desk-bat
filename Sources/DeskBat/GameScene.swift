@@ -134,7 +134,9 @@ final class GameScene: SKScene {
         guideLabel.fontColor = .darkGray
         guideLabel.horizontalAlignmentMode = .center
         guideLabel.verticalAlignmentMode = .center
-        guideLabel.position = CGPoint(x: size.width / 2, y: 60)
+        // Midway between the batter (plate) and the pitcher (release),
+        // below their feet (baseline y 110).
+        guideLabel.position = CGPoint(x: (Self.plateAnchor.x + Self.releaseAnchor.x) / 2, y: 90)
         guideLabel.text = "시작하려면 단축키를 누르세요"
         addChild(guideLabel)
     }

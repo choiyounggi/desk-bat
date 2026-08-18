@@ -3,7 +3,7 @@ import AppKit
 final class OverlayWindow: NSPanel {
     init(contentSize: CGSize) {
         let visibleFrame = NSScreen.main?.visibleFrame ?? .zero
-        let frame = Self.bottomLeftFrame(contentSize: contentSize, in: visibleFrame, margin: 12)
+        let frame = Self.bottomLeftFrame(contentSize: contentSize, in: visibleFrame, margin: 0)
         super.init(
             contentRect: frame,
             styleMask: [.borderless, .nonactivatingPanel],

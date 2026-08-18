@@ -12,7 +12,7 @@ final class GameScene: SKScene {
     /// Ball-path anchors: pitcher release point and home plate, in scene
     /// points. `scenePosition(for:)` maps PitchEngine's normalized
     /// (x 0→1, y -1...1) trajectory onto the line between them.
-    static let releaseAnchor = CGPoint(x: 300, y: 120)
+    static let releaseAnchor = CGPoint(x: 300, y: 110)
     static let plateAnchor = CGPoint(x: 86, y: 110)
     /// The ball travels hand-to-chest, not foot-to-foot: release at the
     /// pitcher's throwing hand, plate crossing at the batter's torso — so a
@@ -123,12 +123,11 @@ final class GameScene: SKScene {
             label.verticalAlignmentMode = .top
             addChild(label)
         }
-        pitchCountLabel.position = CGPoint(x: 12, y: size.height - 8)
-        pitchCountLabel.horizontalAlignmentMode = .left
-        totalDistanceLabel.position = CGPoint(x: size.width / 2, y: size.height - 8)
-        totalDistanceLabel.horizontalAlignmentMode = .center
-        bestScoreLabel.position = CGPoint(x: size.width - 12, y: size.height - 8)
-        bestScoreLabel.horizontalAlignmentMode = .right
+        // Stacked top-left, one stat per line, sharing the same left edge.
+        for (index, label) in [pitchCountLabel, totalDistanceLabel, bestScoreLabel].enumerated() {
+            label.position = CGPoint(x: 12, y: size.height - 8 - CGFloat(index) * 17)
+            label.horizontalAlignmentMode = .left
+        }
 
         guideLabel.fontName = "Menlo"
         guideLabel.fontSize = 12

@@ -50,6 +50,7 @@ To launch at login, add `DeskBat.app` to System Settings > General > Login Items
 | ⌃⌥S (Control+Option+S) | Swing |
 | ⌃⌥G (Control+Option+G) | Start a game (10 pitches) |
 | ⌃⌥H (Control+Option+H) | Boss key — toggle window visibility (hiding also pauses the game) |
+| ⌃⌥R (Control+Option+R) | Toggle the scoreboard panel |
 
 Modifier combos were chosen over F-keys on purpose: many external keyboards
 handle `Fn` in firmware and never deliver F6–F8 to macOS at all, and on Mac
@@ -62,11 +63,12 @@ auto-created with defaults on first launch:
 {
   "swingKeyCode": 1, "swingModifiers": 6144,
   "startKeyCode": 5, "startModifiers": 6144,
-  "bossKeyCode": 4, "bossModifiers": 6144
+  "bossKeyCode": 4, "bossModifiers": 6144,
+  "recordKeyCode": 15, "recordModifiers": 6144
 }
 ```
 
-Key codes are macOS virtual key codes (S=1, G=5, H=4); modifiers are a Carbon
+Key codes are macOS virtual key codes (S=1, G=5, H=4, R=15); modifiers are a Carbon
 modifier mask (6144 = Control 4096 + Option 2048; Shift 512, Command 256 —
 use 0 for a bare key). A config file from an older version without the
 modifier fields is automatically reset to these defaults. Restart the app
@@ -88,7 +90,7 @@ The result depends on how far the ball is from the contact point at the
 moment you swing (converted to ms at the pitch's average speed — so what you
 see is what gets judged, even on the decelerating changeup):
 
-- Within ±40ms: **Homerun** (100–150m) — the ball leaves the park; the more precise, the bigger the fireworks
+- Within ±40ms: **Homerun** (100–150m) — the ball sails far past the pitcher; the more precise, the bigger the fireworks
 - Within ±90ms: **Hit** (40–95m)
 - Within ±140ms: **Foul** (0m)
 - Otherwise, or no swing: **Whiff** (0m)

@@ -48,6 +48,7 @@ open DeskBat.app
 | ⌃⌥S (Control+Option+S) | 스윙 |
 | ⌃⌥G (Control+Option+G) | 게임 시작 (10구) |
 | ⌃⌥H (Control+Option+H) | 보스키 — 창 숨김/표시 토글 (숨기면 게임도 일시정지) |
+| ⌃⌥R (Control+Option+R) | 점수판(기록) 패널 토글 |
 
 F키 대신 조합키를 기본값으로 쓰는 이유: 외장 키보드 상당수는 `Fn`을 펌웨어가
 자체 처리해서 F6~F8이 macOS에 아예 전달되지 않고, 맥북 키보드에서도 F열은
@@ -60,11 +61,12 @@ F키 대신 조합키를 기본값으로 쓰는 이유: 외장 키보드 상당�
 {
   "swingKeyCode": 1, "swingModifiers": 6144,
   "startKeyCode": 5, "startModifiers": 6144,
-  "bossKeyCode": 4, "bossModifiers": 6144
+  "bossKeyCode": 4, "bossModifiers": 6144,
+  "recordKeyCode": 15, "recordModifiers": 6144
 }
 ```
 
-키 코드는 macOS 가상 키 코드(S=1, G=5, H=4), modifiers는 Carbon modifier
+키 코드는 macOS 가상 키 코드(S=1, G=5, H=4, R=15), modifiers는 Carbon modifier
 마스크입니다 (6144 = Control 4096 + Option 2048; Shift 512, Command 256,
 단독 키는 0). modifier 필드가 없는 구버전 설정 파일은 자동으로 새 기본값으로
 초기화됩니다. 변경 후에는 앱을 재시작해야 적용됩니다.
@@ -84,7 +86,7 @@ F키 대신 조합키를 기본값으로 쓰는 이유: 외장 키보드 상당�
 (남은 거리를 평균 구속으로 ms 환산 — 감속하는 체인지업도 눈에 보이는 위치
 그대로 판정됩니다).
 
-- 오차 ±40ms 이내: 홈런 (100~150m) — 공이 담장(창) 밖으로 날아가고, 정확할수록 폭죽이 화려해집니다
+- 오차 ±40ms 이내: 홈런 (100~150m) — 공이 투수를 한참 넘어 날아가고, 정확할수록 폭죽이 화려해집니다
 - 오차 ±90ms 이내: 안타 (40~95m)
 - 오차 ±140ms 이내: 파울 (0m)
 - 그 외 또는 스윙 없음: 헛스윙 (0m)

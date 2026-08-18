@@ -44,7 +44,7 @@ desk-bat/
 
 - 투명 배경, 무테두리 `NSWindow`, `level = .floating` (항상 최상위),
   `collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]` (모든 Spaces·풀스크린 위 표시).
-- 크기 약 380×260pt, 화면 좌측 하단 고정.
+- 크기 약 560×260pt, 화면 좌측 하단 고정 (타구 풀 궤적 표시를 위해 380→560 확장).
 - Dock 아이콘 없음 (`LSUIElement = true`).
 - 창에 마우스 호버 시 작은 컨트롤 표시: 기록 보기, 종료. (메뉴바 아이콘 없이 종료 경로 확보)
 - 보스키: 창 `orderOut`/`orderFront` 즉시 토글. 게임 진행 중이면 일시정지.
@@ -52,7 +52,7 @@ desk-bat/
 ### 글로벌 단축키 (HotkeyManager)
 
 - Carbon `RegisterEventHotKey` — 접근성 권한 불필요.
-- 기본 키: **⌃⌥S 스윙, ⌃⌥G 게임 시작, ⌃⌥H 보스키** (modifier 마스크 6144 = Control+Option).
+- 기본 키: **⌃⌥S 스윙, ⌃⌥G 게임 시작, ⌃⌥H 보스키, ⌃⌥R 점수판 토글** (modifier 마스크 6144 = Control+Option).
   F키 기본값은 폐기 — 외장 키보드 다수가 Fn을 펌웨어 처리해 F6~F8이 macOS에 전달되지 않음.
 - `~/Library/Application Support/DeskBat/config.json`에서 키코드·modifier 변경 가능.
   파일 없으면 기본값으로 생성. 손상되었거나 modifier 필드가 없는 구버전 파일이면 기본값으로 재작성.
@@ -67,7 +67,7 @@ desk-bat/
 - **판정**: 스윙 순간 공과 타격지점 사이의 남은 거리를 평균 구속으로 환산한 Δ(ms) 기준
   (`PitchEngine.contactDeltaMs`). 늦은 스윙은 타점 통과 후 경과 시간. 선형 구종은 순수
   시간차와 동일하며, 감속 구종(체인지업)은 눈에 보이는 공 위치가 곧 판정 기준이 된다. |Δ|:
-  - ≤ 40ms → 홈런 (100~150m, 연출: 공이 원근 축소되며 씬 안쪽 소실점으로 장외 비행 — 화면 밖 클리핑 없음)
+  - ≤ 40ms → 홈런 (100~150m, 연출: 560pt 필드에서 투수를 한참 지나 우측 끝까지 풀 포물선 비행 — 화면 밖 클리핑 없음)
   - ≤ 90ms → 안타 (40~95m)
   - ≤ 140ms → 파울 (0m, 파울 이펙트)
   - 그 외 / 스윙 안 함 → 헛스윙 (0m)

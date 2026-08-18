@@ -3,7 +3,7 @@ import SpriteKit
 import DeskBatCore
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private static let contentSize = CGSize(width: 380, height: 260)
+    private static let contentSize = CGSize(width: 560, height: 260)
 
     private let store = ScoreStore(directory: ScoreStore.defaultDirectory())
     private let hotkeyManager = HotkeyManager()
@@ -51,6 +51,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if !hotkeyManager.register(id: 3, keyCode: config.bossKeyCode, modifiers: config.bossModifiers) {
             FileHandle.standardError.write(Data("DeskBat: failed to register boss hotkey\n".utf8))
         }
+        if !hotkeyManager.register(id: 4, keyCode: config.recordKeyCode, modifiers: config.recordModifiers) {
+            FileHandle.standardError.write(Data("DeskBat: failed to register record hotkey\n".utf8))
+        }
 
         overlayWindow.orderFrontRegardless()
     }
@@ -66,6 +69,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case 3:
             window.toggleVisibility()
             scene.isPaused = !window.isShown
+        case 4:
+            showHistory()
         default:
             break
         }

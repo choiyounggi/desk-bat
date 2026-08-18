@@ -24,6 +24,8 @@ final class GameConfigTests: XCTestCase {
         XCTAssertEqual(GameConfig.default.startModifiers, 6144)
         XCTAssertEqual(GameConfig.default.bossKeyCode, 4)
         XCTAssertEqual(GameConfig.default.bossModifiers, 6144)
+        XCTAssertEqual(GameConfig.default.recordKeyCode, 15)
+        XCTAssertEqual(GameConfig.default.recordModifiers, 6144)
     }
 
     // MARK: - Normal: a saved custom config round-trips through load()
@@ -32,7 +34,8 @@ final class GameConfigTests: XCTestCase {
         let custom = GameConfig(
             swingKeyCode: 1, swingModifiers: 256,
             startKeyCode: 2, startModifiers: 512,
-            bossKeyCode: 3, bossModifiers: 0
+            bossKeyCode: 3, bossModifiers: 0,
+            recordKeyCode: 9, recordModifiers: 256
         )
         let fileURL = tempDir.appendingPathComponent("config.json")
         try JSONEncoder().encode(custom).write(to: fileURL)
@@ -55,7 +58,7 @@ final class GameConfigTests: XCTestCase {
 
     func testLoad_withLegacyConfigMissingModifiers_migratesToDefault() throws {
         let fileURL = tempDir.appendingPathComponent("config.json")
-        let legacy = #"{"swingKeyCode":97,"startKeyCode":98,"bossKeyCode":100}"#
+        let legacy = #"{"swingKeyCode":1,"swingModifiers":6144,"startKeyCode":5,"startModifiers":6144,"bossKeyCode":4,"bossModifiers":6144}"#
         try Data(legacy.utf8).write(to: fileURL)
 
         let loaded = GameConfig.load(directory: tempDir)

@@ -10,12 +10,12 @@ import DeskBatCore
 /// judgment band (hit 40...95m, homerun 100...150m — display-only mirror of
 /// the core's ranges) so a better-timed swing produces a visibly bigger show.
 ///
-/// Hits fly on a full parabola that LANDS inside the scene — the landing
-/// point maps to the distance — so the whole trajectory stays visible.
-/// Homeruns leave the park: the ball soars past the top-right edge and never
-/// comes back, with fireworks going off mid-sky as it exits. Both flights run
-/// on a clone; the real ball is hidden immediately so the pitch loop can
-/// reuse it while the batted ball is still in the air.
+/// Batted balls fly on a full parabola that always LANDS inside the scene —
+/// the landing x maps to distance (hits reach up to around the pitcher,
+/// homeruns sail well past him toward the right edge), so the whole
+/// trajectory is visible and nothing clips at the window edge. The flight
+/// runs on a clone; the real ball is hidden immediately so the pitch loop
+/// can reuse it while the batted ball is still in the air.
 enum EffectsNode {
     static func present(result: SwingResult, ball: SKShapeNode, in scene: SKScene, labelPosition: CGPoint) {
         switch result {
@@ -28,12 +28,12 @@ enum EffectsNode {
             }
             label(text: "HOMERUN! \(distance)m", color: .systemOrange, at: labelPosition,
                   in: scene, fontSize: 20 + q * 8, holdDuration: 0.7 + q * 0.4)
-            launchOutOfPark(from: ball, in: scene, quality: q, trailRate: 140 + q * 260) { sky in
-                burst(at: sky, in: scene, color: .systemOrange, intensity: 1 + q)
-                delayedBurst(at: sky.offsetBy(dy: 14), in: scene, color: .systemYellow,
+            launch(from: ball, in: scene, distance: distance, trailRate: 140 + q * 260) { landing in
+                burst(at: landing, in: scene, color: .systemOrange, intensity: 1 + q)
+                delayedBurst(at: landing.offsetBy(dy: 14), in: scene, color: .systemYellow,
                              intensity: 0.8 + q, delay: 0.15)
                 if q >= 0.6 {
-                    delayedBurst(at: sky.offsetBy(dy: 28), in: scene, color: .systemRed,
+                    delayedBurst(at: landing.offsetBy(dy: 28), in: scene, color: .systemRed,
                                  intensity: 1.4, delay: 0.3)
                 }
             }
@@ -235,43 +235,11 @@ enum EffectsNode {
         return flight
     }
 
-    /// Homerun flight: the ball sails toward the upper-right and shrinks as it
-    /// goes — perspective for a ball flying deep out of the park — vanishing
-    /// with fireworks at a sky point that stays INSIDE the scene, so the
-    /// flight is never clipped by the window edge. Better quality flies
-    /// deeper (farther right/higher) and slightly longer.
-    private static func launchOutOfPark(from ball: SKShapeNode, in scene: SKScene, quality q: CGFloat,
-                                        trailRate: CGFloat, fireworks: @escaping (CGPoint) -> Void) {
-        let start = ball.position
-        ball.isHidden = true
-        let flight = flightBall(at: start, trailRate: trailRate, in: scene)
-
-        let vanish = CGPoint(
-            x: scene.size.width * (0.62 + 0.20 * q),
-            y: scene.size.height * (0.55 + 0.15 * q)
-        )
-        let apex = 45 + q * 30
-        let duration = 1.0 + 0.3 * Double(q)
-
-        flight.run(.sequence([
-            .customAction(withDuration: duration) { node, elapsed in
-                let p = CGFloat(elapsed) / CGFloat(duration)
-                node.position = CGPoint(
-                    x: start.x + (vanish.x - start.x) * p,
-                    y: start.y + (vanish.y - start.y) * p + apex * sin(.pi * p)
-                )
-                node.setScale(1 - 0.8 * p)
-            },
-            .run { fireworks(vanish) },
-            .fadeOut(withDuration: 0.2),
-            .removeFromParent()
-        ]))
-    }
-
-    /// Hit flight: hides the real ball and flies a clone on a parabola that
-    /// lands INSIDE the scene — landing x maps distance 40m→~half width,
-    /// 95m→~3/4 width — then bounces twice, calls `onLanding` at touchdown,
-    /// and fades. The whole arc stays on screen.
+    /// Batted-ball flight: hides the real ball and flies a clone on a parabola
+    /// that lands INSIDE the scene — landing x maps distance linearly (weak
+    /// hits fall in front of the pitcher, ~53m reaches him, homeruns sail far
+    /// past toward the right edge) — then bounces twice, calls `onLanding` at
+    /// touchdown, and fades. The whole arc stays on screen.
     private static func launch(from ball: SKShapeNode, in scene: SKScene, distance: Int,
                                trailRate: CGFloat, onLanding: @escaping (CGPoint) -> Void) {
         let start = ball.position
@@ -280,7 +248,7 @@ enum EffectsNode {
 
         // Distance → geometry: farther = longer, higher, slightly slower arc.
         let f = CGFloat(min(max(Double(distance) / 150.0, 0), 1))
-        let landingX = scene.size.width * (0.35 + 0.62 * f)
+        let landingX = scene.size.width * (0.30 + 0.67 * f)
         let groundY: CGFloat = 112
         let apex = 45 + f * 60
         let duration = 0.55 + 0.45 * Double(f)

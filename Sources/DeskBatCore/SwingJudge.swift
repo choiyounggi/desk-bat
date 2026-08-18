@@ -1,0 +1,50 @@
+import Foundation
+
+public enum SwingResult: Equatable, Codable {
+    case homerun(distance: Int)
+    case hit(distance: Int)
+    case foul
+    case miss
+
+    public var distance: Int {
+        switch self {
+        case .homerun(let distance): return distance
+        case .hit(let distance): return distance
+        case .foul, .miss: return 0
+        }
+    }
+
+    public var label: String {
+        switch self {
+        case .homerun: return "홈런"
+        case .hit: return "안타"
+        case .foul: return "파울"
+        case .miss: return "헛스윙"
+        }
+    }
+}
+
+public enum SwingJudge {
+    /// - Parameters:
+    ///   - deltaMs: swing time minus pitch-crossing time, in ms. nil = no swing.
+    public static func judge(deltaMs: Double?, using rng: inout any RandomNumberGenerator) -> SwingResult {
+        guard let deltaMs else { return .miss }
+        let absDelta = abs(deltaMs)
+
+        if absDelta <= 40 {
+            let base = 120 - (absDelta / 40) * 30
+            let jitter = Double.random(in: -5...5, using: &rng)
+            let distance = Int((base + jitter).rounded())
+            return .homerun(distance: min(max(distance, 90), 120))
+        } else if absDelta <= 90 {
+            let base = 80 - (absDelta / 90) * 50
+            let jitter = Double.random(in: -8...8, using: &rng)
+            let distance = Int((base + jitter).rounded())
+            return .hit(distance: min(max(distance, 30), 80))
+        } else if absDelta <= 140 {
+            return .foul
+        } else {
+            return .miss
+        }
+    }
+}

@@ -1,0 +1,4 @@
+.orchestration/
+.build/
+.DS_Store
+*.app

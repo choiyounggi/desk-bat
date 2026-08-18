@@ -1,57 +1,61 @@
 # DeskBat ⚾
 
-분명 열심히 일하는 중입니다. 화면 구석에서 졸라맨이 야구를 하고 있을 뿐이죠.
+**English** | [한국어](README.ko.md)
 
-DeskBat은 맥북으로 업무를 하다가 갑자기 야구가 하고 싶어질 때(생각보다 자주
-그렇습니다)를 위한 초소형 오버레이 게임입니다. 화면 왼쪽 아래에 얌전히 떠 있고,
-Dock에도 없고, 클릭해도 작업 중인 앱의 포커스를 뺏지 않습니다. 코드 리뷰를
-기다리는 그 3분, 빌드가 도는 그 5분 — 손은 계속 키보드 위에 있으니 누가 봐도
-업무 중입니다. F6으로 스윙하고, 누가 다가오면 F8 한 번으로 증거를 인멸하세요
-(창 숨김 + 일시정지, 복귀도 F8).
+You are definitely hard at work. There just happens to be a stickman playing
+baseball in the corner of your screen.
 
-![홈런 순간 — 임팩트와 함께 공이 날아간다](docs/images/screenshot-homerun.png)
+DeskBat is a tiny overlay game for those moments when you're working on your
+Mac and suddenly need to play baseball (it happens more often than you'd
+think). It sits quietly in the bottom-left corner of your screen — no Dock
+icon, and clicking it never steals focus from the app you're "working" in.
+Those 3 minutes waiting for code review, those 5 minutes while the build runs —
+your hands never leave the keyboard, so to any onlooker you are simply Very
+Busy. Swing with F6, and when someone walks by, destroy the evidence with a
+single F8 (hides the window and pauses the game; F8 again to resume).
 
-*PERFECT 타이밍 홈런의 순간. 평소에는 아래처럼 얌전히 대기합니다.*
+![The homerun moment — impact burst and the ball taking off](docs/images/screenshot-homerun.png)
 
-![대기 화면](docs/images/screenshot-idle.png)
+*A PERFECT-timing homerun. The rest of the time it waits politely, like below.*
 
-- **투명 오버레이** — 무테두리·클릭해도 작업 앱의 포커스를 뺏지 않음, 항상 최상위
-- **글로벌 단축키** — 접근성 권한 불필요 (Carbon RegisterEventHotKey)
-- **4가지 구종** — 빠른 직구 / 느린 직구 / 커브(낙차) / 체인지업(감속)
-- **타이밍 판정** — 홈런·안타·파울·헛스윙, 정확할수록 비거리 증가
-- **타격 이펙트** — 충격 링·카메라 셰이크·비거리 비례 폭죽, 풀 포물선 궤적
-- **기록** — 10구 비거리 합산 점수, 최고 기록·히스토리 저장
-- **보스키** — 한 키로 즉시 숨김 + 일시정지
-- **의존성 0** — 순수 Swift + SpriteKit/AppKit, 외부 에셋·라이브러리 없음
+![Idle screen](docs/images/screenshot-idle.png)
 
-## 설치 / 빌드
+- **Transparent overlay** — borderless, always on top, never steals focus
+- **Global hotkeys** — no accessibility permission needed (Carbon RegisterEventHotKey)
+- **4 pitch types** — fastball / slowball / curve (drops) / changeup (decelerates)
+- **Timing judgment** — homerun, hit, foul, or whiff; better timing = longer distance
+- **Hit effects** — impact ring, camera shake, distance-scaled fireworks, fully visible arc
+- **Score history** — 10 pitches per game, total distance as score, best-score tracking
+- **Boss key** — one key to instantly hide + pause
+- **Zero dependencies** — pure Swift + SpriteKit/AppKit, no external assets or libraries
+
+## Install / Build
 
 ```sh
 sh Scripts/make-app.sh
 ```
 
-레포 루트에 `DeskBat.app`이 생성됩니다. 완료 후 실행:
+This creates `DeskBat.app` in the repo root. Then run:
 
 ```sh
 open DeskBat.app
 ```
 
-로그인 시 자동 실행하려면 `DeskBat.app`을 시스템 설정 > 일반 > 로그인 항목에
-추가하세요.
+To launch at login, add `DeskBat.app` to System Settings > General > Login Items.
 
-## 조작
+## Controls
 
-| 키 | 동작 |
-|----|------|
-| F6 | 스윙 |
-| F7 | 게임 시작 (10구) |
-| F8 | 보스키 — 창 숨김/표시 토글 (숨기면 게임도 일시정지) |
+| Key | Action |
+|-----|--------|
+| F6 | Swing |
+| F7 | Start a game (10 pitches) |
+| F8 | Boss key — toggle window visibility (hiding also pauses the game) |
 
-노트북 키보드에서는 F6/F7/F8이 밝기·볼륨 등 기능 키와 겹치는 경우가 많습니다.
-그럴 때는 `Fn` 키를 함께 눌러야 합니다 (`Fn+F6` 등).
+On laptop keyboards F6/F7/F8 often double as brightness/volume keys, so you may
+need to hold `Fn` (e.g. `Fn+F6`).
 
-키 매핑은 `~/Library/Application Support/DeskBat/config.json`에서 바꿀 수
-있습니다. 앱을 처음 실행하면 기본값으로 자동 생성됩니다:
+Key mappings live in `~/Library/Application Support/DeskBat/config.json`,
+auto-created with defaults on first launch:
 
 ```json
 {
@@ -61,51 +65,55 @@ open DeskBat.app
 }
 ```
 
-값은 macOS 가상 키 코드입니다 (기본값: F6=97, F7=98, F8=100). 변경 후에는
-앱을 재시작해야 적용됩니다.
+Values are macOS virtual key codes (defaults: F6=97, F7=98, F8=100). Restart
+the app after changing them.
 
-## 게임 규칙
+## Game Rules
 
-한 게임은 10구로 구성됩니다. 투수는 1.5~3.5초 랜덤 간격으로 랜덤 구종을 던집니다.
+A game is 10 pitches. The pitcher throws a random pitch type at random
+intervals (1.5–3.5s).
 
-| 구종 | 특징 |
-|------|------|
-| 빠른 직구 | 릴리즈 후 약 0.45초 만에 도달 |
-| 느린 직구 | 약 0.8초 — 타이밍 흔들기 |
-| 커브 | 세로로 낙차가 생김 |
-| 체인지업 | 중반 이후 감속 |
+| Pitch | Behavior |
+|-------|----------|
+| Fastball | Reaches the plate in ~0.45s |
+| Slowball | ~0.8s — messes with your timing |
+| Curve | Drops vertically |
+| Changeup | Decelerates mid-flight |
 
-공이 홈플레이트를 지나가는 순간과 스윙 타이밍의 오차(ms)로 결과가 갈립니다.
+The result depends on the gap (ms) between the ball crossing the plate and
+your swing:
 
-- 오차 ±40ms 이내: 홈런 (90~120m) — 정확할수록 폭죽이 화려해집니다
-- 오차 ±90ms 이내: 안타 (30~80m)
-- 오차 ±140ms 이내: 파울 (0m)
-- 그 외 또는 스윙 없음: 헛스윙 (0m)
+- Within ±40ms: **Homerun** (90–120m) — the more precise, the bigger the fireworks
+- Within ±90ms: **Hit** (30–80m)
+- Within ±140ms: **Foul** (0m)
+- Otherwise, or no swing: **Whiff** (0m)
 
-10구가 끝나면 비거리 합계가 이번 게임 점수입니다. 오버레이 창에 마우스를
-올리면 우측 상단에 "기록"/"✕" 버튼이 나타납니다. "기록"은 최근 10게임과
-최고 기록을 보여주고, "✕"는 앱을 종료합니다.
+Your score is the total distance across 10 pitches. Hover over the overlay to
+reveal two buttons in the top-right: "기록" (history) shows the last 10 games
+and your best score, "✕" quits the app.
 
-## 기록 데이터
+## Data
 
-게임 기록은 `~/Library/Application Support/DeskBat/history.json`에 저장됩니다.
+Game history is stored at `~/Library/Application Support/DeskBat/history.json`.
 
-## 개발
+## Development
 
 ```sh
 swift build
 swift test
 ```
 
-Swift Package 2타깃 구조입니다:
+The Swift Package has two targets:
 
-- `DeskBatCore` — 게임 로직 전부 (구종/궤적, 타이밍 판정, 10구 세션, 기록/설정
-  저장). Foundation만 사용하는 순수 라이브러리로, 렌더링과 판정이 같은 궤적
-  함수를 공유하고 랜덤은 RNG 주입으로 결정적 테스트가 가능합니다.
-- `DeskBat` — AppKit + SpriteKit 실행 타깃 (오버레이 창, 글로벌 핫키, 씬/이펙트).
+- `DeskBatCore` — all game logic (pitch types/trajectories, timing judgment,
+  10-pitch session, score/config persistence). A pure Foundation-only library:
+  rendering and judgment share the same trajectory function, and randomness is
+  injected via RNG for deterministic tests.
+- `DeskBat` — the AppKit + SpriteKit executable (overlay window, global
+  hotkeys, scene/effects).
 
-로직이 Core에 분리되어 있어 2인 플레이 확장을 염두에 두고 있습니다.
+The logic lives in Core with a 2-player extension in mind.
 
-## 요구 사항
+## Requirements
 
-macOS 13 이상, 빌드에는 Xcode Command Line Tools (Swift 5.9+).
+macOS 13+; building requires Xcode Command Line Tools (Swift 5.9+).

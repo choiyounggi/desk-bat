@@ -20,6 +20,11 @@ let package = Package(
             name: "DeskBatCoreTests",
             dependencies: ["DeskBatCore"],
             path: "Tests/DeskBatCoreTests"
+        ),
+        .testTarget(
+            name: "DeskBatTests",
+            dependencies: ["DeskBat"],
+            path: "Tests/DeskBatTests"
         )
     ]
 )

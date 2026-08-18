@@ -90,8 +90,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             historyPanel.orderOut(nil)
             return
         }
-        let text = HistoryFormatter.format(history: store.history, best: store.best)
-        let panel = makeHistoryPanel(text: text)
+        let board = HistoryFormatter.scoreboard(history: store.history, best: store.best)
+        let panel = makeHistoryPanel(text: Self.scoreboardText(board))
         historyPanel = panel
         panel.makeKeyAndOrderFront(nil)
     }
@@ -100,7 +100,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.terminate(nil)
     }
 
-    private func makeHistoryPanel(text: String) -> NSPanel {
+    /// Renders the scoreboard as a two-column table: dates on the left, scores
+    /// right-aligned on a tab stop so rows line up regardless of digit count.
+    private static func scoreboardText(_ board: HistoryFormatter.Scoreboard?) -> NSAttributedString {
+        guard let board else {
+            return NSAttributedString(
+                string: "아직 기록이 없어요",
+                attributes: [.font: NSFont.systemFont(ofSize: 13), .foregroundColor: NSColor.secondaryLabelColor]
+            )
+        }
+
+        // Right tab must sit inside the text view's line fragment (panel 260
+        // minus insets, legacy scroller, and fragment padding ≈ 210pt usable),
+        // or scores wrap to the next line instead of right-aligning.
+        let scoreColumn = NSMutableParagraphStyle()
+        scoreColumn.tabStops = [NSTextTab(type: .rightTabStopType, location: 185)]
+        scoreColumn.paragraphSpacing = 5
+
+        let headerStyle = scoreColumn.mutableCopy() as! NSMutableParagraphStyle
+        headerStyle.paragraphSpacing = 10
+
+        let text = NSMutableAttributedString()
+        text.append(NSAttributedString(string: "🏆 BEST", attributes: [
+            .font: NSFont.systemFont(ofSize: 14, weight: .bold),
+            .foregroundColor: NSColor.labelColor,
+            .paragraphStyle: headerStyle,
+        ]))
+        text.append(NSAttributedString(string: "\t\(board.best)\n", attributes: [
+            .font: NSFont.monospacedDigitSystemFont(ofSize: 14, weight: .bold),
+            .foregroundColor: NSColor.systemOrange,
+            .paragraphStyle: headerStyle,
+        ]))
+
+        for entry in board.entries {
+            text.append(NSAttributedString(string: entry.date, attributes: [
+                .font: NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .regular),
+                .foregroundColor: NSColor.secondaryLabelColor,
+                .paragraphStyle: scoreColumn,
+            ]))
+            text.append(NSAttributedString(string: "\t\(entry.score)\n", attributes: [
+                .font: NSFont.monospacedDigitSystemFont(ofSize: 12, weight: .semibold),
+                .foregroundColor: NSColor.labelColor,
+                .paragraphStyle: scoreColumn,
+            ]))
+        }
+        return text
+    }
+
+    private func makeHistoryPanel(text: NSAttributedString) -> NSPanel {
         let panelSize = CGSize(width: 260, height: 220)
         let origin = CGPoint(x: window.frame.maxX + 8, y: window.frame.minY)
 
@@ -120,10 +167,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
 
         let textView = NSTextView(frame: CGRect(origin: .zero, size: panelSize))
-        textView.string = text
+        textView.textStorage?.setAttributedString(text)
         textView.isEditable = false
-        textView.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
-        textView.textContainerInset = NSSize(width: 10, height: 10)
+        textView.drawsBackground = false
+        textView.textContainerInset = NSSize(width: 12, height: 12)
         textView.autoresizingMask = [.width, .height]
 
         let scrollView = NSScrollView(frame: CGRect(origin: .zero, size: panelSize))

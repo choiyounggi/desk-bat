@@ -9,52 +9,47 @@ final class HistoryFormatterTests: XCTestCase {
         return GameRecord(date: formatter.date(from: iso)!, score: score, results: [])
     }
 
-    // MARK: - Normal: rows align — every line has the same width regardless of digit count
+    // MARK: - Normal: best score and per-row date/score strings
 
-    func testFormat_rowsShareSameWidth() {
+    func testScoreboard_normalHistory_hasBestAndRows() throws {
         let history = [
             record("2026-08-18T14:08:00Z", score: 8),
             record("2026-12-31T23:59:00Z", score: 1500),
-            record("2026-01-01T00:00:00Z", score: 940),
         ]
-        let text = HistoryFormatter.format(history: history, best: history[1], timeZone: utc)
-        let rows = text.split(separator: "\n").map(String.init)
+        let board = try XCTUnwrap(HistoryFormatter.scoreboard(history: history, best: history[1], timeZone: utc))
 
-        // Header + separator + 3 records.
-        XCTAssertEqual(rows.count, 5)
-        let widths = Set(rows.map { $0.count })
-        XCTAssertEqual(widths.count, 1, "all lines should be equal width, got \(rows)")
-        // Scores are right-aligned: every row ends with "m".
-        for row in rows.dropFirst(2) {
-            XCTAssertTrue(row.hasSuffix("m"), "row should end with m: \(row)")
-        }
+        XCTAssertEqual(board.best, "1500m")
+        XCTAssertEqual(board.entries.count, 2)
+        XCTAssertEqual(board.entries[0].date, "12/31 23:59")
+        XCTAssertEqual(board.entries[0].score, "1500m")
+        XCTAssertEqual(board.entries[1].date, "8/18 14:08")
+        XCTAssertEqual(board.entries[1].score, "8m")
     }
 
     // MARK: - Normal: newest record comes first, capped at 10 rows
 
-    func testFormat_sortsNewestFirstAndCapsAtTen() {
+    func testScoreboard_sortsNewestFirstAndCapsAtTen() throws {
         let history = (1...12).map { record("2026-03-\(String(format: "%02d", $0))T12:00:00Z", score: $0 * 10) }
-        let text = HistoryFormatter.format(history: history, best: history.last!, timeZone: utc)
-        let rows = text.split(separator: "\n").map(String.init)
+        let board = try XCTUnwrap(HistoryFormatter.scoreboard(history: history, best: history.last!, timeZone: utc))
 
-        XCTAssertEqual(rows.count, 12, "header + separator + 10 records")
-        XCTAssertTrue(rows[2].contains("3/12"), "newest first: \(rows[2])")
-        XCTAssertTrue(rows.last!.contains("3/3"), "11th/12th oldest dropped: \(rows.last!)")
+        XCTAssertEqual(board.entries.count, 10)
+        XCTAssertEqual(board.entries.first?.date, "3/12 12:00")
+        XCTAssertEqual(board.entries.last?.date, "3/3 12:00")
     }
 
     // MARK: - Normal: dates render in the given time zone, not UTC
 
-    func testFormat_respectsTimeZone() {
+    func testScoreboard_respectsTimeZone() throws {
         let seoul = TimeZone(identifier: "Asia/Seoul")!
         let history = [record("2026-08-18T20:08:00Z", score: 100)]
-        let text = HistoryFormatter.format(history: history, best: history[0], timeZone: seoul)
+        let board = try XCTUnwrap(HistoryFormatter.scoreboard(history: history, best: history[0], timeZone: seoul))
         // 20:08 UTC = 05:08 next day in KST.
-        XCTAssertTrue(text.contains("8/19 05:08"), text)
+        XCTAssertEqual(board.entries[0].date, "8/19 05:08")
     }
 
-    // MARK: - Boundary/empty: no records at all
+    // MARK: - Boundary/empty: no records → nil (caller shows a placeholder)
 
-    func testFormat_emptyHistory_showsPlaceholder() {
-        XCTAssertEqual(HistoryFormatter.format(history: [], best: nil, timeZone: utc), "기록 없음")
+    func testScoreboard_emptyHistory_isNil() {
+        XCTAssertNil(HistoryFormatter.scoreboard(history: [], best: nil, timeZone: utc))
     }
 }

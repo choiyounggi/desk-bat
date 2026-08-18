@@ -235,32 +235,36 @@ enum EffectsNode {
         return flight
     }
 
-    /// Homerun flight: the ball soars on a high arc past the top-right edge
-    /// of the scene and never lands — it left the park. `fireworks` fires
-    /// mid-flight at the ball's sky position while it is still visible.
+    /// Homerun flight: the ball sails toward the upper-right and shrinks as it
+    /// goes — perspective for a ball flying deep out of the park — vanishing
+    /// with fireworks at a sky point that stays INSIDE the scene, so the
+    /// flight is never clipped by the window edge. Better quality flies
+    /// deeper (farther right/higher) and slightly longer.
     private static func launchOutOfPark(from ball: SKShapeNode, in scene: SKScene, quality q: CGFloat,
                                         trailRate: CGFloat, fireworks: @escaping (CGPoint) -> Void) {
         let start = ball.position
         ball.isHidden = true
         let flight = flightBall(at: start, trailRate: trailRate, in: scene)
 
-        let end = CGPoint(x: scene.size.width * 1.35, y: 150)
-        let apex = 80 + q * 50
-        let duration = 0.9 + 0.3 * Double(q)
+        let vanish = CGPoint(
+            x: scene.size.width * (0.62 + 0.20 * q),
+            y: scene.size.height * (0.55 + 0.15 * q)
+        )
+        let apex = 45 + q * 30
+        let duration = 1.0 + 0.3 * Double(q)
 
         flight.run(.sequence([
             .customAction(withDuration: duration) { node, elapsed in
                 let p = CGFloat(elapsed) / CGFloat(duration)
                 node.position = CGPoint(
-                    x: start.x + (end.x - start.x) * p,
-                    y: start.y + (end.y - start.y) * p + apex * sin(.pi * p)
+                    x: start.x + (vanish.x - start.x) * p,
+                    y: start.y + (vanish.y - start.y) * p + apex * sin(.pi * p)
                 )
+                node.setScale(1 - 0.8 * p)
             },
+            .run { fireworks(vanish) },
+            .fadeOut(withDuration: 0.2),
             .removeFromParent()
-        ]))
-        scene.run(.sequence([
-            .wait(forDuration: duration * 0.55),
-            .run { if flight.parent != nil { fireworks(flight.position) } }
         ]))
     }
 

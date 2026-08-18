@@ -14,6 +14,11 @@ final class GameScene: SKScene {
     /// (x 0→1, y -1...1) trajectory onto the line between them.
     static let releaseAnchor = CGPoint(x: 300, y: 120)
     static let plateAnchor = CGPoint(x: 86, y: 110)
+    /// The ball travels hand-to-chest, not foot-to-foot: release at the
+    /// pitcher's throwing hand, plate crossing at the batter's torso — so a
+    /// swing meets the ball at body height (StickmanNode chest ≈ +28 local).
+    static let ballReleasePoint = CGPoint(x: 288, y: 138)
+    static let ballPlatePoint = CGPoint(x: 102, y: 138)
     private static let verticalScale: CGFloat = 60
 
     private let session = GameSession()
@@ -96,6 +101,13 @@ final class GameScene: SKScene {
     // MARK: - Scene setup
 
     private func setUpNodes() {
+        // Camera exists solely so impact effects can shake the view
+        // (SKScene.position is ignored by SKView; a camera jiggle is not).
+        let cam = SKCameraNode()
+        cam.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        addChild(cam)
+        camera = cam
+
         pitcher.position = Self.releaseAnchor
         batter.position = Self.plateAnchor
         addChild(pitcher)
@@ -247,8 +259,8 @@ final class GameScene: SKScene {
     /// comes solely from PitchEngine.position, never recomputed here.
     static func scenePosition(for point: PitchPoint) -> CGPoint {
         let progress = CGFloat(point.x)
-        let x = releaseAnchor.x + (plateAnchor.x - releaseAnchor.x) * progress
-        let baselineY = releaseAnchor.y + (plateAnchor.y - releaseAnchor.y) * progress
+        let x = ballReleasePoint.x + (ballPlatePoint.x - ballReleasePoint.x) * progress
+        let baselineY = ballReleasePoint.y + (ballPlatePoint.y - ballReleasePoint.y) * progress
         let y = baselineY + CGFloat(point.y) * verticalScale
         return CGPoint(x: x, y: y)
     }

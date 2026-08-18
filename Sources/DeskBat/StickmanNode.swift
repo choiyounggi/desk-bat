@@ -134,34 +134,37 @@ final class StickmanNode: SKNode {
                 bat: nil
             )
         case .batReady:
+            // Bat cocked behind the batter (-x) so the swing sweeps left→right.
             return Frame(
                 head: CGPoint(x: 0, y: 42),
                 torso: [CGPoint(x: 0, y: 36), CGPoint(x: 0, y: 20)],
-                armLead: [CGPoint(x: 0, y: 32), CGPoint(x: 8, y: 30)],
-                armTrail: [CGPoint(x: 0, y: 32), CGPoint(x: 6, y: 26)],
+                armLead: [CGPoint(x: 0, y: 32), CGPoint(x: -6, y: 27)],
+                armTrail: [CGPoint(x: 0, y: 32), CGPoint(x: -4, y: 29)],
                 legLead: [CGPoint(x: 0, y: 20), CGPoint(x: 5, y: 0)],
                 legTrail: [CGPoint(x: 0, y: 20), CGPoint(x: -5, y: 0)],
-                bat: [CGPoint(x: 8, y: 30), CGPoint(x: 14, y: 40)]
+                bat: [CGPoint(x: -6, y: 27), CGPoint(x: -13, y: 39)]
             )
         case .swing:
+            // Contact point: bat extended forward (+x), level with the ball.
             return Frame(
                 head: CGPoint(x: 1, y: 42),
                 torso: [CGPoint(x: 1, y: 36), CGPoint(x: 0, y: 20)],
                 armLead: [CGPoint(x: 1, y: 32), CGPoint(x: 14, y: 26)],
-                armTrail: [CGPoint(x: 1, y: 32), CGPoint(x: 10, y: 20)],
+                armTrail: [CGPoint(x: 1, y: 32), CGPoint(x: 10, y: 22)],
                 legLead: [CGPoint(x: 0, y: 20), CGPoint(x: 6, y: 0)],
                 legTrail: [CGPoint(x: 0, y: 20), CGPoint(x: -6, y: 2)],
-                bat: [CGPoint(x: 14, y: 26), CGPoint(x: 22, y: 8)]
+                bat: [CGPoint(x: 14, y: 26), CGPoint(x: 24, y: 25)]
             )
         case .followThrough:
+            // Swing continues up and over the lead shoulder (+x high).
             return Frame(
-                head: CGPoint(x: -1, y: 41),
-                torso: [CGPoint(x: -1, y: 35), CGPoint(x: 0, y: 20)],
-                armLead: [CGPoint(x: -1, y: 30), CGPoint(x: -12, y: 22)],
-                armTrail: [CGPoint(x: -1, y: 30), CGPoint(x: -6, y: 16)],
+                head: CGPoint(x: 1, y: 41),
+                torso: [CGPoint(x: 1, y: 35), CGPoint(x: 0, y: 20)],
+                armLead: [CGPoint(x: 1, y: 30), CGPoint(x: 9, y: 38)],
+                armTrail: [CGPoint(x: 1, y: 30), CGPoint(x: 5, y: 35)],
                 legLead: [CGPoint(x: 0, y: 20), CGPoint(x: 5, y: 0)],
                 legTrail: [CGPoint(x: 0, y: 20), CGPoint(x: -5, y: 2)],
-                bat: [CGPoint(x: -12, y: 22), CGPoint(x: -20, y: 30)]
+                bat: [CGPoint(x: 9, y: 38), CGPoint(x: 13, y: 49)]
             )
         }
     }

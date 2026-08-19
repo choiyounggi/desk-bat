@@ -11,9 +11,11 @@ Dock에도 없고, 클릭해도 작업 중인 앱의 포커스를 뺏지 않습�
 업무 중입니다. ⌃⌥S로 스윙하고, 누가 다가오면 ⌃⌥H 한 번으로 증거를 인멸하세요
 (창 숨김 + 일시정지, 복귀도 ⌃⌥H).
 
-![홈런 순간 — 임팩트와 함께 공이 날아간다](docs/images/screenshot-homerun.png)
+![플레이 영상 — 화면 구석에서 안타와 홈런이 터진다](docs/images/gameplay.gif)
 
-*PERFECT 타이밍 홈런의 순간. 평소에는 아래처럼 얌전히 대기합니다.*
+*실제 플레이 장면. 아래는 PERFECT 타이밍 홈런의 순간과 얌전히 대기 중인 화면.*
+
+![홈런 순간 — 임팩트와 함께 공이 날아간다](docs/images/screenshot-homerun.png)
 
 ![대기 화면](docs/images/screenshot-idle.png)
 

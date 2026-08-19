@@ -14,9 +14,11 @@ your hands never leave the keyboard, so to any onlooker you are simply Very
 Busy. Swing with ⌃⌥S, and when someone walks by, destroy the evidence with a
 single ⌃⌥H (hides the window and pauses the game; ⌃⌥H again to resume).
 
-![The homerun moment — impact burst and the ball taking off](docs/images/screenshot-homerun.png)
+![Gameplay — hits and homeruns in the corner of your screen](docs/images/gameplay.gif)
 
-*A PERFECT-timing homerun. The rest of the time it waits politely, like below.*
+*Live gameplay. Below: a PERFECT-timing homerun, and the idle screen waiting politely.*
+
+![The homerun moment — impact burst and the ball taking off](docs/images/screenshot-homerun.png)
 
 ![Idle screen](docs/images/screenshot-idle.png)
 

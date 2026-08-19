@@ -137,7 +137,7 @@ final class GameScene: SKScene {
         // Midway between the batter (plate) and the pitcher (release),
         // below their feet (baseline y 110).
         guideLabel.position = CGPoint(x: (Self.plateAnchor.x + Self.releaseAnchor.x) / 2, y: 90)
-        guideLabel.text = "시작하려면 단축키를 누르세요"
+        guideLabel.text = "Press the start hotkey to play"
         addChild(guideLabel)
     }
 
@@ -212,7 +212,7 @@ final class GameScene: SKScene {
         ball.isHidden = true
         pitcher.setPose(.idle)
         batter.setPose(.idle)
-        guideLabel.text = "총점 \(total)m — 다시 시작하려면 단축키를 누르세요"
+        guideLabel.text = "Total \(total)m — press the start hotkey to play again"
         guideLabel.isHidden = false
         onGameFinished?(total, records)
     }

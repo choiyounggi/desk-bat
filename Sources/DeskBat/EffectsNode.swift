@@ -40,13 +40,13 @@ enum EffectsNode {
         case .hit(let distance):
             let q = quality(of: distance, lo: 40, hi: 95)
             impact(at: ball.position, in: scene, intensity: 0.4 + q * 0.5)
-            label(text: "안타 \(distance)m", color: .systemGreen, at: labelPosition,
+            label(text: "HIT \(distance)m", color: .systemGreen, at: labelPosition,
                   in: scene, fontSize: 17 + q * 5, holdDuration: 0.6 + q * 0.3)
             launch(from: ball, in: scene, distance: distance, trailRate: q >= 0.5 ? 90 : 0) { landing in
                 dustPuff(at: landing, in: scene, intensity: 0.4 + q * 0.5)
             }
         case .foul:
-            label(text: "파울", color: .systemYellow, at: labelPosition, in: scene, fontSize: 16, holdDuration: 0.6)
+            label(text: "FOUL!", color: .systemYellow, at: labelPosition, in: scene, fontSize: 16, holdDuration: 0.6)
             tipBackward(ball)
         case .miss:
             fadePast(ball)

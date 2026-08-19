@@ -110,7 +110,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private static func scoreboardText(_ board: HistoryFormatter.Scoreboard?) -> NSAttributedString {
         guard let board else {
             return NSAttributedString(
-                string: "아직 기록이 없어요",
+                string: "No games yet",
                 attributes: [.font: NSFont.systemFont(ofSize: 13), .foregroundColor: NSColor.secondaryLabelColor]
             )
         }
@@ -162,7 +162,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             backing: .buffered,
             defer: false
         )
-        panel.title = "기록"
+        panel.title = "History"
         panel.isReleasedWhenClosed = false
         // Keep the scoreboard readable while the user works in another app —
         // NSPanel hides on deactivate by default, and a normal-level window
@@ -190,7 +190,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 /// Container for the SKView + the hover-revealed record/close buttons (plan D6).
 private final class OverlayContentView: NSView {
-    let recordButton = NSButton(title: "기록", target: nil, action: nil)
+    let recordButton = NSButton(title: "History", target: nil, action: nil)
     let closeButton = NSButton(title: "✕", target: nil, action: nil)
     private var trackingArea: NSTrackingArea?
 
@@ -205,7 +205,7 @@ private final class OverlayContentView: NSView {
 
     private func setUpButtons() {
         closeButton.frame = CGRect(x: bounds.width - 26, y: bounds.height - 24, width: 22, height: 20)
-        recordButton.frame = CGRect(x: bounds.width - 72, y: bounds.height - 24, width: 42, height: 20)
+        recordButton.frame = CGRect(x: bounds.width - 88, y: bounds.height - 24, width: 58, height: 20)
         for button in [recordButton, closeButton] {
             button.bezelStyle = .inline
             button.isHidden = true

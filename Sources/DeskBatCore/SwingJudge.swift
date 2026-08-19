@@ -16,10 +16,10 @@ public enum SwingResult: Equatable, Codable {
 
     public var label: String {
         switch self {
-        case .homerun: return "홈런"
-        case .hit: return "안타"
-        case .foul: return "파울"
-        case .miss: return "헛스윙"
+        case .homerun: return "Homerun"
+        case .hit: return "Hit"
+        case .foul: return "Foul"
+        case .miss: return "Whiff"
         }
     }
 }

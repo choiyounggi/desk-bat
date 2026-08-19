@@ -14,7 +14,7 @@ final class SwingJudgeTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(distance, 100)
         XCTAssertLessThanOrEqual(distance, 150)
         XCTAssertEqual(result.distance, distance)
-        XCTAssertEqual(result.label, "홈런")
+        XCTAssertEqual(result.label, "Homerun")
     }
 
     func testJudge_midDelta_isHitWithinRange() {
@@ -26,7 +26,7 @@ final class SwingJudgeTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(distance, 40)
         XCTAssertLessThanOrEqual(distance, 95)
         XCTAssertEqual(result.distance, distance)
-        XCTAssertEqual(result.label, "안타")
+        XCTAssertEqual(result.label, "Hit")
     }
 
     // MARK: - Negative delta: judged by absolute value, same as positive
@@ -46,7 +46,7 @@ final class SwingJudgeTests: XCTestCase {
         let result = SwingJudge.judge(deltaMs: nil, using: &rng)
         XCTAssertEqual(result, .miss)
         XCTAssertEqual(result.distance, 0)
-        XCTAssertEqual(result.label, "헛스윙")
+        XCTAssertEqual(result.label, "Whiff")
     }
 
     // MARK: - Boundary: exact threshold values (D2 — all thresholds inclusive)
@@ -83,7 +83,7 @@ final class SwingJudgeTests: XCTestCase {
         let result = SwingJudge.judge(deltaMs: 140, using: &rng)
         XCTAssertEqual(result, .foul)
         XCTAssertEqual(result.distance, 0)
-        XCTAssertEqual(result.label, "파울")
+        XCTAssertEqual(result.label, "Foul")
     }
 
     func testJudge_justOver140ms_isMiss() {

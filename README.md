@@ -96,7 +96,7 @@ see is what gets judged, even on the decelerating changeup):
 - Otherwise, or no swing: **Whiff** (0m)
 
 Your score is the total distance across 10 pitches. Hover over the overlay to
-reveal two buttons in the top-right: "기록" (history) shows the last 10 games
+reveal two buttons in the top-right: "History" shows the last 10 games
 and your best score, "✕" quits the app.
 
 ## Data
